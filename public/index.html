@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7f4">
+    <title>Almacén Inteligente | Río Claro</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Río Claro, inicio">
+        <span class="brand-mark" aria-hidden="true">RC</span>
+        <span><strong>Río Claro</strong><small>Operaciones de almacén</small></span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <a href="#inventario">Inventario</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#asistente">Asistente IA</a>
+      </nav>
+      <span class="demo-label"><span aria-hidden="true"></span> Entorno de demostración</span>
+    </header>
+
+    <main id="inicio">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">CENTRO DE CONTROL · ALMACENES</p>
+          <h1>Almacén Inteligente</h1>
+          <p class="hero-copy">Una vista clara de las existencias y las decisiones que mantienen la operación en movimiento.</p>
+        </div>
+        <div class="hero-date">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span>Datos de demostración</span>
+        </div>
+      </section>
+
+      <section id="dashboard" class="section-block" aria-labelledby="dashboard-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">VISIÓN GENERAL</p>
+            <h2 id="dashboard-title">Dashboard gerencial</h2>
+          </div>
+          <p class="section-note">Indicadores simulados; no representan una operación real.</p>
+        </div>
+        <div class="kpi-grid" aria-live="polite">
+          <article class="kpi-card">
+            <span class="kpi-icon icon-green" aria-hidden="true">▦</span>
+            <div><p>Productos en catálogo</p><strong id="kpi-products">—</strong><small id="kpi-units">— existencias totales</small></div>
+          </article>
+          <article class="kpi-card">
+            <span class="kpi-icon icon-red" aria-hidden="true">!</span>
+            <div><p>Productos críticos</p><strong id="kpi-critical">—</strong><small id="kpi-low">— con stock bajo</small></div>
+          </article>
+          <article class="kpi-card">
+            <span class="kpi-icon icon-blue" aria-hidden="true">$</span>
+            <div><p>Valor estimado</p><strong id="kpi-value">—</strong><small>Calculado con precios simulados</small></div>
+          </article>
+          <article class="kpi-card">
+            <span class="kpi-icon icon-amber" aria-hidden="true">↻</span>
+            <div><p>Movimientos de hoy</p><strong id="kpi-movements">—</strong><small>En esta sesión de demostración</small></div>
+          </article>
+        </div>
+
+        <div class="chart-grid">
+          <article class="panel chart-panel">
+            <div class="panel-heading"><div><h3>Existencias por sucursal</h3><p>Unidades disponibles</p></div><span class="chart-symbol" aria-hidden="true">▥</span></div>
+            <div id="branch-chart" class="bar-chart" aria-label="Existencias por sucursal"></div>
+          </article>
+          <article class="panel chart-panel">
+            <div class="panel-heading"><div><h3>Productos más vendidos</h3><p>Movimientos simulados de hoy</p></div><span class="chart-symbol" aria-hidden="true">↗</span></div>
+            <div id="sales-chart" class="bar-chart" aria-label="Productos más vendidos"></div>
+          </article>
+        </div>
+        <article class="panel soon-panel">
+          <div class="panel-heading">
+            <div><h3>Existencias por atender</h3><p>Stock bajo y crítico en cada sucursal</p></div>
+            <a class="text-link" href="#inventario">Ver inventario <span aria-hidden="true">→</span></a>
+          </div>
+          <div id="soon-list" class="attention-list"></div>
+        </article>
+      </section>
+
+      <section id="inventario" class="section-block" aria-labelledby="inventory-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">CONTROL DE EXISTENCIAS</p><h2 id="inventory-title">Inventario</h2></div>
+          <div class="legend" aria-label="Leyenda de existencias">
+            <span class="status status-normal">Normal &gt;100</span>
+            <span class="status status-low">Bajo 30–100</span>
+            <span class="status status-critical">Crítico &lt;30</span>
+          </div>
+        </div>
+        <article class="panel inventory-panel">
+          <div class="table-toolbar">
+            <label class="search-control"><span class="sr-only">Buscar producto</span><span aria-hidden="true">⌕</span><input id="inventory-search" type="search" placeholder="Buscar producto o SKU"></label>
+            <label class="select-control"><span class="sr-only">Filtrar por sucursal</span><select id="branch-filter"><option value="">Todas las sucursales</option></select></label>
+            <span id="inventory-count" class="muted"></span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Producto</th><th>Categoría</th><th>Sucursal</th><th>Existencia</th><th>Estado</th></tr></thead>
+              <tbody id="inventory-body"></tbody>
+            </table>
+          </div>
+          <p id="inventory-error" class="inline-error" role="alert" hidden></p>
+        </article>
+      </section>
+
+      <section class="section-block" aria-labelledby="movements-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">FLUJO OPERATIVO SIMULADO</p><h2 id="movements-title">Registrar movimiento</h2></div>
+          <p class="section-note">Los cambios solo viven mientras el servidor siga activo.</p>
+        </div>
+        <article class="panel movement-panel">
+          <form id="movement-form" class="movement-form">
+            <label>Tipo de movimiento
+              <select id="movement-type" name="type">
+                <option value="purchase">Compra recibida · aumenta stock</option>
+                <option value="sale">Venta realizada · disminuye stock</option>
+                <option value="transfer">Transferencia entre sucursales</option>
+              </select>
+            </label>
+            <label>Producto
+              <select id="movement-product" name="sku" required></select>
+            </label>
+            <label id="branch-field">Sucursal
+              <select id="movement-branch" name="branch" required></select>
+            </label>
+            <label id="source-field" hidden>Sucursal de origen
+              <select id="source-branch" name="sourceBranch"></select>
+            </label>
+            <label id="destination-field" hidden>Sucursal de destino
+              <select id="destination-branch" name="destinationBranch"></select>
+            </label>
+            <label>Cantidad
+              <input id="movement-quantity" name="quantity" type="number" min="1" step="1" required inputmode="numeric" placeholder="Ej. 25">
+            </label>
+            <button class="button button-primary" type="submit">Registrar movimiento</button>
+          </form>
+          <p id="movement-message" class="form-message" role="status" aria-live="polite"></p>
+        </article>
+      </section>
+
+      <section id="asistente" class="section-block assistant-section" aria-labelledby="assistant-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">INTELIGENCIA OPERATIVA</p><h2 id="assistant-title">Asistente de almacén</h2></div>
+          <span class="assistant-badge"><span aria-hidden="true">✦</span> RioClaroWarehouseAgent</span>
+        </div>
+        <div class="assistant-grid">
+          <article class="panel chat-panel">
+            <div class="chat-header">
+              <span class="assistant-avatar" aria-hidden="true">RC</span>
+              <div><strong>Asistente Río Claro</strong><small id="assistant-status">Verificando configuración…</small></div>
+              <span id="assistant-indicator" class="online-indicator" aria-label="Verificando configuración"></span>
+            </div>
+            <div id="chat-messages" class="chat-messages" aria-live="polite" aria-label="Conversación">
+              <div class="message message-assistant"><p>Hola. Puedo ayudarte a revisar existencias, detectar stock crítico y resumir el estado del almacén.</p></div>
+            </div>
+            <div class="suggested-questions">
+              <button type="button" data-question="¿Qué productos tienen stock crítico?">¿Qué es crítico?</button>
+              <button type="button" data-question="¿Qué sucursal tiene más Cloro Industrial?">¿Dónde hay más cloro?</button>
+              <button type="button" data-question="Resume el estado del almacén.">Resumen del almacén</button>
+            </div>
+            <form id="chat-form" class="chat-form">
+              <label class="sr-only" for="chat-input">Escribe una consulta</label>
+              <input id="chat-input" type="text" maxlength="4000" placeholder="Pregunta sobre el inventario…" autocomplete="off" required>
+              <button id="chat-submit" class="button button-primary" type="submit" aria-label="Enviar mensaje"><span aria-hidden="true">↑</span></button>
+            </form>
+            <p id="chat-error" class="inline-error chat-error" role="alert" hidden></p>
+            <p class="chat-disclaimer">La IA consulta datos simulados. Sus sugerencias no generan órdenes de compra.</p>
+          </article>
+          <aside class="panel recommendation-panel">
+            <div class="recommendation-title">
+              <span class="recommendation-icon" aria-hidden="true">✦</span>
+              <div><h3>Sugerencia de compra</h3><p>Basada en existencias críticas</p></div>
+            </div>
+            <p class="recommendation-rule">Regla de demostración: reponer solo cuando hay menos de 30 unidades, hasta alcanzar 100.</p>
+            <button id="recommendation-button" class="button button-secondary" type="button">Generar sugerencia</button>
+            <div id="recommendations" class="recommendations-list" aria-live="polite">
+              <p class="muted">Genera la recomendación para ver los productos que requieren atención.</p>
+            </div>
+            <p class="recommendation-footnote">La sugerencia es informativa; no crea ni envía una compra.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer><span class="brand-mark brand-mark-small" aria-hidden="true">RC</span><span>Río Claro · Prototipo de almacén</span><span>Solo datos de demostración</span></footer>
+    <div id="global-error" class="global-error" role="alert" hidden></div>
+  </body>
+</html>
